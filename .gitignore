@@ -1,0 +1,11 @@
+# Carpetas de compilación
+[Bb]in/
+[Oo]bj/
+
+# Paquetes de librerías (NuGet)
+packages/
+
+# Archivos de Visual Studio
+.vs/
+*.user
+*.suo
