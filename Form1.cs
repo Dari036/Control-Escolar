@@ -37,6 +37,15 @@ namespace modelocalidad
         // LOGIN
         private void BtnIniciarSesion_Click(object sender, EventArgs e)
         {
+            if (TxtContra == null ||
+               txtCorreo.Text == "Correo" ||
+               string.IsNullOrWhiteSpace(TxtContra.Text) ||
+               TxtContra.Text == "Contraseña")
+            {
+                MessageBox.Show("Por favor iungrese contraseña .");
+                return;
+            }
+
             if (CbCategoria.SelectedItem == null ||
                 txtCorreo.Text == "Correo" ||
                 string.IsNullOrWhiteSpace(TxtContra.Text) ||

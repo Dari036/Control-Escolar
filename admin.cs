@@ -21,5 +21,18 @@ namespace modelocalidad
         {
 
         }
+
+        private void admin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //try
+            //{
+            //    Application.Exit();
+            //}
+            //catch (Exception)
+            //{
+
+            //    System.Environment.Exit(0);
+            //}
+        }
     }
 }
