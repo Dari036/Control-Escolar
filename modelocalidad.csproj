@@ -101,6 +101,7 @@
     <Compile Include="admin.Designer.cs">
       <DependentUpon>admin.cs</DependentUpon>
     </Compile>
+    <Compile Include="config\conexion.cs" />
     <Compile Include="estudiante.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="model\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
