@@ -8,5 +8,6 @@ namespace modelocalidad.config
 {
     internal class conexion
     {
+        //oajdojapdjpaowd
     }
 }
