@@ -1,20 +1,23 @@
-// View: Form1.cs
-
-using System;
-using System.Drawing;
+﻿using System;
 using System.Windows.Forms;
-using modelocalidad.ViewModels;
+using modelocalidad.helpers;
+using modelocalidad.model;
+using modelocalidad.services;
+using modelocalidad.viewmodel;
 
 namespace modelocalidad
 {
     public partial class Form1 : Form
     {
-        // ViewModel
-        private LoginViewModel viewModel = new LoginViewModel();
+        private readonly LoginViewModel _loginViewModel;
+        private readonly NavigationService _navigationService;
 
         public Form1()
         {
             InitializeComponent();
+
+            _loginViewModel = new LoginViewModel();
+            _navigationService = new NavigationService();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -23,14 +26,26 @@ namespace modelocalidad
             BtnIniciarSesion.Visible = false;
             txtCorreo.Visible = false;
             TxtContra.Visible = false;
+
+            txtCorreo.Text = "Correo";
+            txtCorreo.ForeColor = System.Drawing.Color.DimGray;
+
+            TxtContra.Text = "Contraseña";
+            TxtContra.ForeColor = System.Drawing.Color.DimGray;
+            TxtContra.UseSystemPasswordChar = false;
+
+            CbCategoria.Items.Clear();
+            CbCategoria.Items.Add("Administrador");
+            CbCategoria.Items.Add("Docente");
+            CbCategoria.Items.Add("Estudiante");
         }
 
-        // MOSTRAR CAMPOS SEGÚN CATEGORÍA
+        // BOTÓN PARA MOSTRAR CAMPOS SEGÚN CATEGORÍA
         private void button2_Click(object sender, EventArgs e)
         {
-            if (CbCategoria.Text == "Estudiante" ||
-                CbCategoria.Text == "Profesor" ||
-                CbCategoria.Text == "Administrador")
+            if (CbCategoria.Text == "Administrador" ||
+                CbCategoria.Text == "Docente" ||
+                CbCategoria.Text == "Estudiante")
             {
                 button1.Visible = true;
                 BtnIniciarSesion.Visible = true;
@@ -42,95 +57,51 @@ namespace modelocalidad
         // LOGIN
         private void BtnIniciarSesion_Click(object sender, EventArgs e)
         {
-            if (CbCategoria.SelectedItem == null ||
-                txtCorreo.Text == "Correo" ||
-                string.IsNullOrWhiteSpace(TxtContra.Text) ||
-                TxtContra.Text == "Contraseña")
+            try
             {
-                MessageBox.Show("Por favor, complete todos los campos.");
-                return;
+                string categoria = CbCategoria.SelectedItem?.ToString() ?? CbCategoria.Text;
+
+                LoginResultado resultado = _loginViewModel.Login(
+                    txtCorreo.Text,
+                    TxtContra.Text,
+                    categoria
+                );
+
+                if (resultado.Exitoso)
+                {
+                    _navigationService.AbrirFormularioSegunRol(resultado.Rol, this);
+                }
+                else
+                {
+                    MessageBox.Show(resultado.Mensaje);
+                }
             }
-
-            string correo = txtCorreo.Text;
-            string password = TxtContra.Text;
-            string categoria = CbCategoria.SelectedItem.ToString();
-
-            bool acceso = viewModel.IniciarSesion(correo, password);
-
-            if (acceso)
+            catch (Exception ex)
             {
-                AbrirFormularioSegunCategoria(categoria);
-            }
-            else
-            {
-                MessageBox.Show("Correo o contraseña incorrectos.");
-            }
-        }
-
-        // ABRIR FORMULARIO SEGÚN CATEGORÍA
-        private void AbrirFormularioSegunCategoria(string categoria)
-        {
-            this.Hide();
-
-            switch (categoria)
-            {
-                case "Administrador":
-                    new admin().Show();
-                    break;
-
-                case "Profesor":
-                    new maestro().Show();
-                    break;
-
-                case "Estudiante":
-                    new estudiante().Show();
-                    break;
-
-                default:
-                    MessageBox.Show("Categoría no válida.");
-                    this.Show();
-                    break;
+                MessageBox.Show("Error general: " + ex.Message);
             }
         }
 
         // PLACEHOLDER CORREO
-        private void txtCorreo_Enter(object sender, EventArgs e)
+        private void textBox1_Enter(object sender, EventArgs e)
         {
-            if (txtCorreo.Text == "Correo")
-            {
-                txtCorreo.Text = "";
-                txtCorreo.ForeColor = Color.Black;
-            }
+            PlaceholderHelper.EnterTextBox(txtCorreo, "Correo");
         }
 
         private void txtCorreo_Leave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtCorreo.Text))
-            {
-                txtCorreo.Text = "Correo";
-                txtCorreo.ForeColor = Color.DimGray;
-            }
+            PlaceholderHelper.LeaveTextBox(txtCorreo, "Correo");
         }
 
         // PLACEHOLDER CONTRASEÑA
         private void TxtContra_Enter(object sender, EventArgs e)
         {
-            if (TxtContra.Text == "Contraseña")
-            {
-                TxtContra.Text = "";
-                TxtContra.ForeColor = Color.Black;
-                TxtContra.UseSystemPasswordChar = true;
-            }
+            PlaceholderHelper.EnterTextBox(TxtContra, "Contraseña", true);
         }
 
         private void TxtContra_Leave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(TxtContra.Text))
-            {
-                TxtContra.Text = "Contraseña";
-                TxtContra.ForeColor = Color.DimGray;
-                TxtContra.UseSystemPasswordChar = false;
-            }
+            PlaceholderHelper.LeaveTextBox(TxtContra, "Contraseña", true);
         }
 
         // BOTÓN CERRAR

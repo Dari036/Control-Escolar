@@ -1,14 +1,40 @@
-using modelocalidad.Models;
 
-namespace modelocalidad.ViewModels
+using modelocalidad.helpers;
+using modelocalidad.model;
+using modelocalidad.services;
+
+namespace modelocalidad.viewmodel
 {
     public class LoginViewModel
     {
-        private UsuarioModel usuarioModel = new UsuarioModel();
+        private readonly AuthService _authService;
 
-        public bool IniciarSesion(string correo, string password)
+        public LoginViewModel()
         {
-            return usuarioModel.ValidarAdmin(correo, password);
+            _authService = new AuthService();
+        }
+
+        public LoginResultado Login(string correo, string contrasena, string categoria)
+        {
+            var usuario = new UsuarioLogin
+            {
+                Correo = correo,
+                Contrasena = contrasena,
+                Categoria = categoria
+            };
+
+            string errorValidacion = ValidationHelper.ValidarLogin(usuario);
+
+            if (!string.IsNullOrWhiteSpace(errorValidacion))
+            {
+                return new LoginResultado
+                {
+                    Exitoso = false,
+                    Mensaje = errorValidacion
+                };
+            }
+
+            return _authService.IniciarSesion(usuario);
         }
     }
 }

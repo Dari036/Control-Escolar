@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace modelocalidad.config
 {
-    internal class conexion
+    public static class DbConfig
     {
-        //oajdojapdjpaowd
+        public static string CadenaConexion =>
+            "Server=127.0.0.1;Database=sistemaescolarvm;Uid=root;Pwd=;";
     }
 }
